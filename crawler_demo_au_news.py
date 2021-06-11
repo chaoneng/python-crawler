@@ -6,16 +6,19 @@ import lxml
 respones = requests.get("https://web.asia.edu.tw/files/501-1000-1007-1.php?Lang=zh-tw")
 respones.encoding='utf-8'
 #print (respones.text)
+# print (respones.text)
 
 soup = BeautifulSoup(respones.text, "lxml")
 #print(soup)
 titles = soup.find_all("div",{"class":"h5"})
-#print (titles.getText())
+# print (titles.getText())
 
-# title_list= []
+title_list= []
 for title in titles:
-    print (title.find("a")['href']) #[取二的元素]
-    #print (title_list)
+    #print (title.find("a")['href']) #[取二的元素]
+    title_list.append(title.getText().strip())
+
+# print (title_list)
 
 #soup.find_all /soup.find /soup.select /soup.select_one
 # title = soup.find("div",{"class":"title"})
@@ -33,7 +36,7 @@ for title in titles:
 # # print (dict_squares)
 
 #將list 轉乘 Str
-# text = "".join(title_list) 
+text = "".join(title_list) 
 # print (text)
 
 # # # #使用jieba套件，進行文章中文斷詞分析
@@ -84,8 +87,35 @@ for title in titles:
  
 # # 使用dictionary的內容產生文字雲
 # wc.generate_from_frequencies(hash)
- 
 # # 視覺化呈現
 # plt.imshow(wc)
 # plt.show()
 
+#####
+import matplotlib.pyplot as plt
+import os
+import numpy as np
+from wordcloud import WordCloud, STOPWORDS
+from PIL import Image
+
+alice_mask = np.array(Image.open("alice_mask.png"))
+
+stopwords = set(STOPWORDS)
+stopwords.add("said")
+
+wc = WordCloud(background_color="white", max_words=2000, mask=alice_mask,
+               stopwords=stopwords, contour_width=3, contour_color='steelblue',font_path="/Users/cnwang/Documents/Python_Code/Noto_Sans_TC/NotoSansTC-Light.otf")
+
+# generate word cloud
+wc.generate(text)
+print (wc.generate(text))
+# store to file
+# wc.to_file("alice.png")
+
+# show
+plt.imshow(wc, interpolation='bilinear')
+plt.axis("off")
+plt.figure()
+plt.imshow(alice_mask, cmap=plt.cm.gray, interpolation='bilinear')
+plt.axis("off")
+plt.show()
